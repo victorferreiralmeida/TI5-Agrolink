@@ -1,0 +1,130 @@
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+  #map-container { border-radius: var(--border-radius-lg); overflow: hidden; border: 0.5px solid var(--color-border-tertiary); height: 320px; width: 100%; }
+  #map { height: 100%; width: 100%; }
+  .panel { display: flex; flex-direction: column; gap: 12px; padding: 1rem 0; }
+  .top-bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .badge { font-size: 12px; padding: 4px 10px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-tertiary); font-family: var(--font-mono); }
+  .badge.active { background: var(--color-background-success); color: var(--color-text-success); border-color: var(--color-border-success); }
+  .badge.error { background: var(--color-background-danger); color: var(--color-text-danger); border-color: var(--color-border-danger); }
+  #status-msg { font-size: 13px; color: var(--color-text-secondary); flex: 1; }
+  .payload-box { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 14px 16px; font-family: var(--font-mono); font-size: 12.5px; color: var(--color-text-primary); white-space: pre; overflow-x: auto; line-height: 1.7; display: none; }
+  .payload-box.visible { display: block; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .copy-btn { font-size: 13px; padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-primary); cursor: pointer; }
+  .copy-btn:hover { background: var(--color-background-secondary); }
+  .copy-btn:active { transform: scale(0.98); }
+  .copy-btn.primary { background: var(--color-background-info); color: var(--color-text-info); border-color: var(--color-border-info); }
+  #copy-feedback { font-size: 12px; color: var(--color-text-success); display: none; align-items: center; gap: 4px; }
+  #copy-feedback.show { display: flex; }
+  .section-label { font-size: 12px; color: var(--color-text-secondary); font-weight: 500; margin-bottom: 4px; }
+</style>
+
+<div class="panel">
+  <div class="top-bar">
+    <button class="copy-btn primary" id="get-location-btn">Capturar minha localização</button>
+  </div>
+
+  <div id="map-container">
+    <div id="map"></div>
+  </div>
+
+  <div id="payload-section" style="display:none;">
+    <div class="section-label">Payload gerado</div>
+    <div class="payload-box visible" id="payload-output"></div>
+    <div class="actions" style="margin-top: 8px;">
+      <button class="copy-btn" id="copy-json-btn">Copiar JSON</button>
+      <button class="copy-btn" id="copy-curl-btn">Copiar como cURL</button>
+      <div id="copy-feedback">Copiado!</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var map = L.map('map', { zoomControl: true }).setView([-19.917, -43.934], 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap',
+    maxZoom: 19
+  }).addTo(map);
+
+  var marker = null;
+  var currentPayload = null;
+
+  function buildPayload(lat, lng, accuracy) {
+    return {
+      event: "location_captured",
+      timestamp: new Date().toISOString(),
+      coordinates: {
+        latitude: parseFloat(lat.toFixed(6)),
+        longitude: parseFloat(lng.toFixed(6)),
+        accuracy_meters: accuracy ? Math.round(accuracy) : null
+      }
+    };
+  }
+
+  document.getElementById('get-location-btn').addEventListener('click', function() {
+    var btn = this;
+    var statusEl = document.getElementById('status-msg');
+    btn.disabled = true;
+    btn.textContent = 'Obtendo localização...';
+    statusEl.textContent = 'Aguardando permissão do navegador...';
+
+    if (!navigator.geolocation) {
+      statusEl.textContent = 'Geolocalização não suportada neste navegador.';
+      btn.disabled = false;
+      btn.textContent = 'Capturar minha localização';
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      function(pos) {
+        var lat = pos.coords.latitude;
+        var lng = pos.coords.longitude;
+        var acc = pos.coords.accuracy;
+
+        map.setView([lat, lng], 15);
+
+        if (marker) map.removeLayer(marker);
+        marker = L.marker([lat, lng]).addTo(map);
+        marker.bindPopup('<b>Você está aqui</b><br>Lat: ' + lat.toFixed(6) + '<br>Lng: ' + lng.toFixed(6)).openPopup();
+
+        currentPayload = buildPayload(lat, lng, acc);
+        document.getElementById('payload-output').textContent = JSON.stringify(currentPayload, null, 2);
+        document.getElementById('payload-section').style.display = 'block';
+        statusEl.textContent = 'Localização capturada com precisão de ±' + Math.round(acc) + 'm.';
+        btn.disabled = false;
+        btn.textContent = 'Atualizar localização';
+      },
+      function(err) {
+        var msgs = {1: 'Permissão negada pelo usuário.', 2: 'Posição indisponível.', 3: 'Tempo esgotado.'};
+        statusEl.textContent = 'Erro: ' + (msgs[err.code] || err.message);
+        btn.disabled = false;
+        btn.textContent = 'Tentar novamente';
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  });
+
+  document.getElementById('copy-json-btn').addEventListener('click', function() {
+    if (!currentPayload) return;
+    navigator.clipboard.writeText(JSON.stringify(currentPayload, null, 2)).then(function() {
+      showCopyFeedback();
+    });
+  });
+
+  document.getElementById('copy-curl-btn').addEventListener('click', function() {
+    if (!currentPayload) return;
+    var curl = "curl -X POST https://sua-api.com/location \\\n  -H 'Content-Type: application/json' \\\n  -d '" + JSON.stringify(currentPayload) + "'";
+    navigator.clipboard.writeText(curl).then(function() {
+      showCopyFeedback();
+    });
+  });
+
+  function showCopyFeedback() {
+    var el = document.getElementById('copy-feedback');
+    el.classList.add('show');
+    setTimeout(function() { el.classList.remove('show'); }, 2000);
+  }
+</script>
