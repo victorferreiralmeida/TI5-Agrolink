@@ -1,0 +1,18 @@
+{
+  "name": "agrolink-mobile",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently --no-kill-others-on-fail -n api,mobile -c cyan,magenta \"node ../front/agrolink/scripts/start-backend.mjs\" \"node scripts/wait-api-and-flutter.mjs\"",
+    "dev:chrome": "concurrently --no-kill-others-on-fail -n api,mobile -c cyan,magenta \"node ../front/agrolink/scripts/start-backend.mjs\" \"npm run dev:flutter:chrome\"",
+    "dev:api": "node ../front/agrolink/scripts/start-backend.mjs",
+    "dev:flutter": "node scripts/wait-api-and-flutter.mjs",
+    "dev:flutter:chrome": "node scripts/wait-api-and-flutter.mjs --chrome",
+    "devices": "cd agrolink && flutter devices",
+    "emulators": "cd agrolink && flutter emulators"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  }
+}
