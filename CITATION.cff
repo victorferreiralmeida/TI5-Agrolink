@@ -1,0 +1,35 @@
+cff-version: 1.0.1
+message: Please cite this software using these metadata.
+title: Agrolink
+authors:
+  - family-names: Araújo Santos
+    given-names: Arthur Henrique
+  - family-names:  Pereira do Carmo
+    given-names: Leonardo Augusto
+  - family-names: Jácome Magalhães de Jesus
+    given-names: Lucas
+  - family-names: Lima Barcellos
+    given-names: Miguel
+  - family-names: Barros Lemos
+    given-names: Pedro
+  - family-names: Ferreira de Almeida
+    given-names: Victor
+  - name-suffix: Professor
+    affiliation: PUC Minas
+    family-names: Silva Tavares
+    given-names: Cleiton
+  - name-suffix: Professor
+    affiliation: PUC Minas
+    family-names: de Macêdo Neto
+    given-names: Cristiano
+  - name-suffix: Professor
+    affiliation: PUC Minas
+    family-names: Carneiro Aramuni
+    given-names: João Paulo
+keywords:
+  - agro
+  - link
+repository-code: https://github.com/ICEI-PUC-Minas-PPLES-TI/plf-es-2026-1-ti5-0492100-agrolink.git
+license: CC-BY-4.0
+version: 1.0.0
+date-released: 2026-07-10

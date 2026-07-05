@@ -1,0 +1,52 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files
+.env
+.env.*
+
+# Java / Gradle
+**/.gradle/
+**/build/
+**/out/
+
+# Node
+**/node_modules/
+**/dist/
+**/coverage/
+
+# Mobile (npm scripts em code/mobile — versionar package-lock.json, não node_modules)
+# Arquivos Flutter gerados: ver code/mobile/agrolink/.gitignore
+
+# Prevent accidental lockfile created in wrong folder
+code/front/package-lock.json
+
+# Uploads locais do backend (evidências, anexos, fotos de teste)
+code/back/uploads/
+code/mobile/agrolink/linux/flutter/generated_plugin_registrant.cc
+code/mobile/agrolink/linux/flutter/generated_plugin_registrant.h
+code/mobile/agrolink/linux/flutter/generated_plugins.cmake
+code/mobile/agrolink/macos/Flutter/GeneratedPluginRegistrant.swift
+code/mobile/agrolink/windows/flutter/generated_plugin_registrant.cc
+code/mobile/agrolink/windows/flutter/generated_plugin_registrant.h
+code/mobile/agrolink/windows/flutter/generated_plugins.cmake
+.idea/misc.xml
+.idea/TIS 5.iml
+code/back/local.properties
+code/mobile/agrolink/linux/flutter/generated_plugin_registrant.cc
+code/mobile/agrolink/linux/flutter/generated_plugin_registrant.h
+code/mobile/agrolink/linux/flutter/generated_plugins.cmake
+code/mobile/agrolink/macos/Flutter/GeneratedPluginRegistrant.swift
+code/mobile/agrolink/windows/flutter/generated_plugin_registrant.cc
+code/mobile/agrolink/windows/flutter/generated_plugin_registrant.h
+code/mobile/agrolink/windows/flutter/generated_plugins.cmake
