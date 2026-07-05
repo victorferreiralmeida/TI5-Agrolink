@@ -1,0 +1,39 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '4.0.5'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'agrolink'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	// Explícito: garante resolução de jakarta.validation no IDE (além do transitivo do starter-validation).
+	implementation 'jakarta.validation:jakarta.validation-api'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.security:spring-security-crypto'
+	// Spring Boot 4+: console H2 não vem mais no autoconfigure “core”
+	implementation 'org.springframework.boot:spring-boot-h2console'
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
